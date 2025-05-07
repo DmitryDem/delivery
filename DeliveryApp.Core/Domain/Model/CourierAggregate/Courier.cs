@@ -27,12 +27,12 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             Name = name;
             Transport = transport;
             Location = location;
-            Status = CourierStatus.Free;
+            Status = CourierStatus.Free();
         }
 
         public string Name { get; private set; }
 
-        public Transport Transport { get; private set; }
+        public Transport Transport { get; }
 
         public Location Location { get; private set; }
 
@@ -68,18 +68,18 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 
         public Result<Courier, Error> SetBusy()
         {
-            if (Status != CourierStatus.Free)
+            if (Status != CourierStatus.Free())
             {
                 return Errors.CourierIsNotFree(this);
             }
 
-            Status = CourierStatus.Busy;
+            Status = CourierStatus.Busy();
             return this;
         }
 
         public Result<Courier, Error> SetFree()
         {
-            Status = CourierStatus.Free;
+            Status = CourierStatus.Free();
             return this;
         }
 

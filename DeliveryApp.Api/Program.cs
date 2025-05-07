@@ -1,5 +1,11 @@
 using DeliveryApp.Api;
 using DeliveryApp.Core.Domain.Services;
+using DeliveryApp.Core.Ports;
+using DeliveryApp.Infrastructure.Adapters.Postgres;
+using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
+
+using Microsoft.EntityFrameworkCore;
+using Primitives;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +27,23 @@ builder.Services.ConfigureOptions<SettingsSetup>();
 builder.Services.AddTransient<IDispatchService, DispatchService>();
 
 var connectionString = builder.Configuration["CONNECTION_STRING"];
+//var connectionString = "Host=localhost;Port=5432;Database=postgres;Username=username;Password=secret;";
+
+// Database, ORM 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseNpgsql(connectionString,
+        sqlOptions => { sqlOptions.MigrationsAssembly("DeliveryApp.Infrastructure"); });
+    options.EnableSensitiveDataLogging();
+}
+);
+
+// UnitOfWork
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Repositories
+builder.Services.AddTransient<IOrderRepository, OrderRepository>();
+builder.Services.AddTransient<ICourierRepository, CourierRepository>();
 
 var app = builder.Build();
 
@@ -35,10 +58,9 @@ app.UseHealthChecks("/health");
 app.UseRouting();
 
 // Apply Migrations
-// using (var scope = app.Services.CreateScope())
-// {
-//     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//     db.Database.Migrate();
-// }
-
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//    db.Database.Migrate();
+//}
 app.Run();

@@ -47,7 +47,7 @@ namespace DeliveryApp.UnitTests.Domain.Model.CourierAggregate
             courier.Value.Name.Should().Be("Alex");
             courier.Value.Transport.Should().NotBeNull();
             courier.Value.Location.Should().NotBeNull();
-            courier.Value.Status.Should().Be(CourierStatus.Free);
+            courier.Value.Status.Should().Be(CourierStatus.Free());
         }
 
         [Theory]
@@ -75,7 +75,7 @@ namespace DeliveryApp.UnitTests.Domain.Model.CourierAggregate
 
             //Assert
             result.IsSuccess.Should().BeTrue();
-            result.Value.Status.Should().Be(CourierStatus.Busy);
+            result.Value.Status.Should().Be(CourierStatus.Busy());
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace DeliveryApp.UnitTests.Domain.Model.CourierAggregate
 
             //Assert
             result.IsSuccess.Should().BeTrue();
-            result.Value.Status.Should().Be(CourierStatus.Free);
+            result.Value.Status.Should().Be(CourierStatus.Free());
         }
 
         [Theory]

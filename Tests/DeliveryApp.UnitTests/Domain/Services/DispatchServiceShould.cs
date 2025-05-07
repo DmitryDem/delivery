@@ -39,8 +39,8 @@ namespace DeliveryApp.UnitTests.Domain.Services
             result.IsSuccess.Should().BeTrue();
             result.Value.CourierId.Should().NotBeNull();
             result.Value.CourierId.Should().Be(courierWithCarTransport.Id);
-            result.Value.Status.Should().Be(OrderStatus.Assign);
-            courierWithCarTransport.Status.Should().Be(CourierStatus.Busy);
+            result.Value.Status.Should().Be(OrderStatus.Assign());
+            courierWithCarTransport.Status.Should().Be(CourierStatus.Busy());
         }
 
         [Fact]

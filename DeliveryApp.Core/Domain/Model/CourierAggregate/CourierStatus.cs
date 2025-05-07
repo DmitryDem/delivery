@@ -5,9 +5,6 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 {
     public class CourierStatus : ValueObject
     {
-        public static readonly CourierStatus Free = new(nameof(Free).ToLowerInvariant());
-        public static readonly CourierStatus Busy = new(nameof(Busy).ToLowerInvariant());
-
         /// <summary>
         /// Дефолтный конструктов для ORM
         /// </summary>
@@ -26,6 +23,16 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         protected override IEnumerable<IComparable> GetEqualityComponents()
         {
             yield return Name;
+        }
+
+        public static CourierStatus Free()
+        {
+            return new CourierStatus(nameof(Free).ToLowerInvariant());
+        }
+
+        public static CourierStatus Busy()
+        {
+            return new CourierStatus(nameof(Busy).ToLowerInvariant());
         }
     }
 }

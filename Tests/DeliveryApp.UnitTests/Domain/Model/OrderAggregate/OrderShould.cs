@@ -65,7 +65,7 @@ namespace DeliveryApp.UnitTests.Domain.Model.OrderAggregate
             order.IsSuccess.Should().BeTrue();
             order.Value.CourierId.Should().NotBeNull();
             order.Value.CourierId.Should().Be(courier.Value.Id);
-            order.Value.Status.Should().Be(OrderStatus.Assign());
+            order.Value.Status.Should().Be(OrderStatus.Assigned());
         }
 
         [Fact]

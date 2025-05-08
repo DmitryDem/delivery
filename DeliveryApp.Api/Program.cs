@@ -3,9 +3,16 @@ using DeliveryApp.Core.Domain.Services;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
-
 using Microsoft.EntityFrameworkCore;
 using Primitives;
+using System.Reflection;
+using DeliveryApp.Core.Application.UseCases.Commands.AssignOrderToCourier;
+using DeliveryApp.Core.Application.UseCases.Commands.CreateOrder;
+using DeliveryApp.Core.Application.UseCases.Commands.MoveCouriers;
+using DeliveryApp.Core.Application.UseCases.Queries.GetBusyCouriers;
+using DeliveryApp.Core.Application.UseCases.Queries.GetIncompletedOrders;
+
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,7 +52,20 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IOrderRepository, OrderRepository>();
 builder.Services.AddTransient<ICourierRepository, CourierRepository>();
 
+// Mediator
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+// Commands
+builder.Services.AddTransient<IRequestHandler<CreateOrderCommand, bool>, CreateOrderCommandHandler>();
+builder.Services.AddTransient<IRequestHandler<MoveCouriersCommand, bool>, MoveCouriersCommandHandler>();
+builder.Services.AddTransient<IRequestHandler<AssignOrderToCourierCommand, bool>, AssignOrderToCourierCommandHandler>();
+
+// Queries
+
 var app = builder.Build();
+
+builder.Services.AddTransient<IRequestHandler<GetBusyCouriersQuery, GetBusyCouriersResponseModel>>(_ => new GetBusyCouriersQueryHandler(connectionString));
+builder.Services.AddTransient<IRequestHandler<GetIncompletedOrdersQuery, GetIncompletedOrdersResponseModel>>(_ => new GetIncompletedOrdersQueryHandler(connectionString));
 
 // -----------------------------------
 // Configure the HTTP request pipeline

@@ -30,9 +30,9 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
             return new OrderStatus(nameof(Created).ToLowerInvariant());
         }
 
-        public static OrderStatus Assign()
+        public static OrderStatus Assigned()
         {
-            return new OrderStatus(nameof(Assign).ToLowerInvariant());
+            return new OrderStatus(nameof(Assigned).ToLowerInvariant());
         }
 
         public static OrderStatus Completed()

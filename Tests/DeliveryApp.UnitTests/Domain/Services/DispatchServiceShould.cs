@@ -33,14 +33,14 @@ namespace DeliveryApp.UnitTests.Domain.Services
             var dispatchService = new DispatchService();
 
             // Act
-            var result = dispatchService.Dispatch(order, couriers);
+            var courier = dispatchService.Dispatch(order, couriers);
 
             // Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.CourierId.Should().NotBeNull();
-            result.Value.CourierId.Should().Be(courierWithCarTransport.Id);
-            result.Value.Status.Should().Be(OrderStatus.Assign());
-            courierWithCarTransport.Status.Should().Be(CourierStatus.Busy());
+            courier.IsSuccess.Should().BeTrue();
+            order.CourierId.Should().NotBeNull();
+            order.CourierId.Should().Be(courierWithCarTransport.Id);
+            order.Status.Should().Be(OrderStatus.Assigned());
+            courier.Value.Status.Should().Be(CourierStatus.Busy());
         }
 
         [Fact]

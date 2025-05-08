@@ -41,7 +41,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
         {
             return this.dbContext
                        .Orders
-                       .Where(o => o.Status.Name == OrderStatus.Assign().Name);
+                       .Where(o => o.Status.Name == OrderStatus.Assigned().Name);
         }
     }
 }

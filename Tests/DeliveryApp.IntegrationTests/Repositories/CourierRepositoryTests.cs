@@ -1,5 +1,4 @@
 ﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
-using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
@@ -134,7 +133,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             await unitOfWork.SaveChangesAsync();
 
             //Act
-            var couriersFromDb = courierRepository.GetAllInFreeStatus().ToList();
+            var couriersFromDb = await courierRepository.GetAllInFreeStatus();
 
             //Assert
             couriersFromDb.Should().HaveCount(2);

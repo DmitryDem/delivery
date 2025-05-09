@@ -29,10 +29,11 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
                 .SingleOrDefaultAsync(c => c.Id == courierId);
         }
 
-        public IEnumerable<Courier> GetAllInFreeStatus()
+        public async Task<IReadOnlyCollection<Courier>> GetAllInFreeStatus()
         {
-            return this.dbContext.Couriers
-                .Where(c => c.Status.Name == CourierStatus.Free().Name);
+            return await this.dbContext.Couriers
+                .Where(c => c.Status.Name == CourierStatus.Free().Name)
+                .ToListAsync();
         }
     }
 }

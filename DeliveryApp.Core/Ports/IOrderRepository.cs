@@ -12,6 +12,6 @@ namespace DeliveryApp.Core.Ports
 
         Task<Order> GetFirstInCreatedStatusAsync();
 
-        IEnumerable<Order> GetAllInAssignStatus();
+        Task<IReadOnlyCollection<Order>> GetAllInAssignStatus();
     }
 }

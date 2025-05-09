@@ -37,11 +37,12 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
                        .FirstOrDefaultAsync(o => o.Status.Name == OrderStatus.Created().Name);
         }
 
-        public IEnumerable<Order> GetAllInAssignStatus()
+        public async Task<IReadOnlyCollection<Order>> GetAllInAssignStatus()
         {
-            return this.dbContext
+            return await this.dbContext
                        .Orders
-                       .Where(o => o.Status.Name == OrderStatus.Assign().Name);
+                       .Where(o => o.Status.Name == OrderStatus.Assign().Name)
+                       .ToListAsync();
         }
     }
 }

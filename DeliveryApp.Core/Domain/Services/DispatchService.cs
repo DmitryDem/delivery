@@ -10,7 +10,7 @@ namespace DeliveryApp.Core.Domain.Services
         public Result<Order, Error> Dispatch(Order order, List<Courier> couriers)
         {
             var courier = couriers
-                .Where(c => c.Status == CourierStatus.Free)
+                .Where(c => c.Status == CourierStatus.Free())
                 .OrderBy(c => c.CalculateTimeToLocation(order.Location))
                 .FirstOrDefault();
 

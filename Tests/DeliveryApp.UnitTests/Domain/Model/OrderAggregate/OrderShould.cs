@@ -29,7 +29,7 @@ namespace DeliveryApp.UnitTests.Domain.Model.OrderAggregate
             //Assert
             order.IsSuccess.Should().BeTrue();
             order.Value.Id.Should().Be(basketId);
-            order.Value.Status.Should().Be(OrderStatus.Created);
+            order.Value.Status.Should().Be(OrderStatus.Created());
             order.Value.Location.Should().NotBeNull();
             order.Value.Location.Should().Be(location);
             order.Value.CourierId.Should().BeNull();
@@ -65,7 +65,7 @@ namespace DeliveryApp.UnitTests.Domain.Model.OrderAggregate
             order.IsSuccess.Should().BeTrue();
             order.Value.CourierId.Should().NotBeNull();
             order.Value.CourierId.Should().Be(courier.Value.Id);
-            order.Value.Status.Should().Be(OrderStatus.Assign);
+            order.Value.Status.Should().Be(OrderStatus.Assign());
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace DeliveryApp.UnitTests.Domain.Model.OrderAggregate
 
             //Assert
             order.IsSuccess.Should().BeTrue();
-            order.Value.Status.Should().Be(OrderStatus.Completed);
+            order.Value.Status.Should().Be(OrderStatus.Completed());
         }
 
         [Fact]

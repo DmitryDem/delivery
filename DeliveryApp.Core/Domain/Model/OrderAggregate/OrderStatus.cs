@@ -5,10 +5,6 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
 {
     public class OrderStatus : ValueObject
     {
-        public static readonly OrderStatus Created = new(nameof(Created).ToLowerInvariant());
-        public static readonly OrderStatus Assign = new(nameof(Assign).ToLowerInvariant());
-        public static readonly OrderStatus Completed = new(nameof(Completed).ToLowerInvariant());
-
         /// <summary>
         /// Дефолтный конструктов для ORM
         /// </summary>
@@ -27,6 +23,21 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         protected override IEnumerable<IComparable> GetEqualityComponents()
         {
             yield return Name;
+        }
+
+        public static OrderStatus Created()
+        {
+            return new OrderStatus(nameof(Created).ToLowerInvariant());
+        }
+
+        public static OrderStatus Assign()
+        {
+            return new OrderStatus(nameof(Assign).ToLowerInvariant());
+        }
+
+        public static OrderStatus Completed()
+        {
+            return new OrderStatus(nameof(Completed).ToLowerInvariant());
         }
     }
 }

@@ -10,13 +10,13 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
     {
         private static readonly HashSet<OrderStatus> AssignStatusTransitions =
             [
-                OrderStatus.Created,
-                OrderStatus.Assign
+                OrderStatus.Created(),
+                OrderStatus.Assign()
             ];
 
         private static readonly HashSet<OrderStatus> CompleteStatusTransitions =
             [
-                OrderStatus.Assign
+                OrderStatus.Assign()
             ];
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         {
             Id = basketId;
             Location = location;
-            Status = OrderStatus.Created;
+            Status = OrderStatus.Created();
         }
 
         public Location Location { get; private set; }
@@ -73,7 +73,7 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
             }
 
             CourierId = courier.Id;
-            Status = OrderStatus.Assign;
+            Status = OrderStatus.Assign();
             return this;
         }
 
@@ -84,7 +84,7 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
                 return Errors.InvalidCompleteTransitionOrderStatus();
             }
 
-            Status = OrderStatus.Completed;
+            Status = OrderStatus.Completed();
             return this;
         }
 

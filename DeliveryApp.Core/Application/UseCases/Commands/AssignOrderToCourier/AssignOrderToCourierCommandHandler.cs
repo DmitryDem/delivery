@@ -35,9 +35,8 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.AssignOrderToCourier
             }
 
             // Получаем свободных курьеров
-            var couriers = this.courierRepository
-                .GetAllInFreeStatus()
-                .ToList();
+            var couriers = await this.courierRepository
+                .GetAllInFreeStatus();
 
             if (couriers.Count == 0)
             {

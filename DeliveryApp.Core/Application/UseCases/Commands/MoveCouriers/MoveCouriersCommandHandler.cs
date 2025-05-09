@@ -23,7 +23,7 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.MoveCouriers
         public async Task<bool> Handle(MoveCouriersCommand request, CancellationToken cancellationToken)
         {
             // Получаем все заказы назначенные на курьеров
-            var orders = orderRepository.GetAllInAssignStatus();
+            var orders = await orderRepository.GetAllInAssignStatus();
 
             foreach (var order in orders)
             {

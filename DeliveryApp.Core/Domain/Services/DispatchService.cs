@@ -7,7 +7,7 @@ namespace DeliveryApp.Core.Domain.Services
 {
     public class DispatchService : IDispatchService
     {
-        public Result<Courier, Error> Dispatch(Order order, List<Courier> couriers)
+        public Result<Courier, Error> Dispatch(Order order, IReadOnlyCollection<Courier> couriers)
         {
             var courier = couriers
                 .Where(c => c.Status == CourierStatus.Free())

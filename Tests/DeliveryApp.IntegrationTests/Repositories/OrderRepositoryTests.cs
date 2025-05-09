@@ -167,7 +167,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             await unitOfWork.SaveChangesAsync();
 
             //Act
-            var ordersFromDb = orderRepository.GetAllInAssignStatus().ToList();
+            var ordersFromDb = await orderRepository.GetAllInAssignStatus();
 
             //Assert
             ordersFromDb.Should().HaveCount(2);

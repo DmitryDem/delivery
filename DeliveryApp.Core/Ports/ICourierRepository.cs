@@ -11,6 +11,6 @@ namespace DeliveryApp.Core.Ports
 
         Task<Courier> GetAsync(Guid courierId);
 
-        IEnumerable<Courier> GetAllInFreeStatus();
+        Task<IReadOnlyCollection<Courier>> GetAllInFreeStatus();
     }
 }

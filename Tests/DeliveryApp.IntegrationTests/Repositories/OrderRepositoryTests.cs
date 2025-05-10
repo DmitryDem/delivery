@@ -93,7 +93,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             //Assert
             var orderFromDb = await orderRepository.GetAsync(order.Id);
             orderFromDb.CourierId.Should().Be(courier.Id);
-            orderFromDb.Status.Should().Be(OrderStatus.Assign());
+            orderFromDb.Status.Should().Be(OrderStatus.Assigned());
         }
 
         [Fact]

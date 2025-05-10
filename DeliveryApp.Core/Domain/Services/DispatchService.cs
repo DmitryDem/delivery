@@ -7,7 +7,7 @@ namespace DeliveryApp.Core.Domain.Services
 {
     public class DispatchService : IDispatchService
     {
-        public Result<Order, Error> Dispatch(Order order, List<Courier> couriers)
+        public Result<Courier, Error> Dispatch(Order order, IReadOnlyCollection<Courier> couriers)
         {
             var courier = couriers
                 .Where(c => c.Status == CourierStatus.Free())
@@ -19,8 +19,13 @@ namespace DeliveryApp.Core.Domain.Services
                 return Errors.NoAvailableCourier();
             }
 
-            var result = courier.SetBusy();
-            return !result.IsSuccess ? result.Error : order.Assignee(courier);
+            var assigneeResult = order.Assignee(courier);
+            if (!assigneeResult.IsSuccess)
+            {
+                return assigneeResult.Error;
+            }
+
+            return courier.SetBusy();
         }
 
         public static class Errors

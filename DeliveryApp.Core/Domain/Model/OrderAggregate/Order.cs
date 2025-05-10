@@ -11,12 +11,12 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         private static readonly HashSet<OrderStatus> AssignStatusTransitions =
             [
                 OrderStatus.Created(),
-                OrderStatus.Assign()
+                OrderStatus.Assigned()
             ];
 
         private static readonly HashSet<OrderStatus> CompleteStatusTransitions =
             [
-                OrderStatus.Assign()
+                OrderStatus.Assigned()
             ];
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
             }
 
             CourierId = courier.Id;
-            Status = OrderStatus.Assign();
+            Status = OrderStatus.Assigned();
             return this;
         }
 

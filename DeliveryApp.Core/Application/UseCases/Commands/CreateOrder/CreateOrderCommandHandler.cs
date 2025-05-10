@@ -1,4 +1,5 @@
-﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
 using DeliveryApp.Core.Ports;
 using MediatR;
@@ -6,7 +7,7 @@ using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Commands.CreateOrder
 {
-    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, bool>
+    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, UnitResult<Error>>
     {
         private readonly IOrderRepository orderRepository;
         private readonly IUnitOfWork unitOfWork;
@@ -19,7 +20,7 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.CreateOrder
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<bool> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
             // тут будет определение Location по Street. Пока генерируем рандомную локацию
             var location = Location.CreateRandom();
@@ -27,11 +28,13 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.CreateOrder
 
             if (!order.IsSuccess)
             {
-                return false;
+                return UnitResult.Failure(order.Error);
             }
 
             await this.orderRepository.AddAsync(order.Value);
-            return await this.unitOfWork.SaveChangesAsync(cancellationToken);
+            await this.unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return UnitResult.Success<Error>();
         }
     }
 }

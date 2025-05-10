@@ -1,21 +1,21 @@
 ﻿using MediatR;
 
-namespace DeliveryApp.Core.Application.UseCases.Queries.GetBusyCouriers
+namespace DeliveryApp.Core.Application.UseCases.Queries.GetAllCouriers
 {
-    public class GetBusyCouriersQueryHandler : IRequestHandler<GetBusyCouriersQuery, GetCouriersResponseModel>
+    public class GetAllCouriersQueryHandler : IRequestHandler<GetAllCouriersQuery, GetCouriersResponseModel>
     {
         private readonly string connectionString;
 
-        public GetBusyCouriersQueryHandler(string connectionString)
+        public GetAllCouriersQueryHandler(string connectionString)
         {
             this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public async Task<GetCouriersResponseModel> Handle(GetBusyCouriersQuery request, CancellationToken cancellationToken)
+        public async Task<GetCouriersResponseModel> Handle(GetAllCouriersQuery request, CancellationToken cancellationToken)
         {
             await using var connection = new Npgsql.NpgsqlConnection(connectionString);
             await connection.OpenAsync(cancellationToken);
-            var command = new Npgsql.NpgsqlCommand("SELECT id, name, location_x, location_y FROM public.couriers WHERE status = 'busy'", connection);
+            var command = new Npgsql.NpgsqlCommand("SELECT id, name, location_x, location_y FROM public.couriers", connection);
             var reader = await command.ExecuteReaderAsync(cancellationToken);
 
             var couriers = new List<CourierModel>();

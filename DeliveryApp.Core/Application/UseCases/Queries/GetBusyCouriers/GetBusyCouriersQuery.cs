@@ -2,7 +2,7 @@
 
 namespace DeliveryApp.Core.Application.UseCases.Queries.GetBusyCouriers
 {
-    public class GetBusyCouriersQuery : IRequest<GetBusyCouriersResponseModel>
+    public class GetBusyCouriersQuery : IRequest<GetCouriersResponseModel>
     {
     }
 }

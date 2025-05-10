@@ -56,7 +56,7 @@ namespace DeliveryApp.UnitTests.Application
             var result = await handler.Handle(command, new CancellationToken());
 
             //Assert
-            result.Should()
+            result.IsSuccess.Should()
                 .BeTrue();
             this.orderRepository.Received(1)
                 .Update(
@@ -101,7 +101,7 @@ namespace DeliveryApp.UnitTests.Application
             var result = await handler.Handle(command, new CancellationToken());
 
             //Assert
-            result.Should()
+            result.IsSuccess.Should()
                 .BeTrue();
             this.orderRepository.Received(0)
                 .Update(Arg.Any<Order>());

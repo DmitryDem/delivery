@@ -1,8 +1,11 @@
-﻿using MediatR;
+﻿using CSharpFunctionalExtensions;
+using MediatR;
+
+using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Commands.CreateOrder
 {
-    public class CreateOrderCommand : IRequest<bool>
+    public class CreateOrderCommand : IRequest<UnitResult<Error>>
     {
         public CreateOrderCommand(Guid basketId, string street)
         {

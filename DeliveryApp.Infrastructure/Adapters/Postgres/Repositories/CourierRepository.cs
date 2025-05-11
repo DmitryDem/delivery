@@ -26,6 +26,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
         public Task<Courier> GetAsync(Guid courierId)
         {
             return this.dbContext.Couriers
+                .Include(c => c.Transport)
                 .SingleOrDefaultAsync(c => c.Id == courierId);
         }
 
@@ -33,6 +34,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
         {
             return await this.dbContext.Couriers
                 .Where(c => c.Status.Name == CourierStatus.Free().Name)
+                .Include(c => c.Transport)
                 .ToListAsync();
         }
     }

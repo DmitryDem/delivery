@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Primitives;
 using System.Reflection;
 using CSharpFunctionalExtensions;
+
+using DeliveryApp.Api.Adapters.Jobs;
 using DeliveryApp.Core.Application.UseCases.Commands.AssignOrderToCourier;
 using DeliveryApp.Core.Application.UseCases.Commands.CreateCourier;
 using DeliveryApp.Core.Application.UseCases.Commands.CreateOrder;
@@ -19,11 +21,14 @@ using OpenApi.Filters;
 using OpenApi.OpenApi;
 using DeliveryApp.Core.Application.UseCases.Queries;
 using DeliveryApp.Core.Application.UseCases.Queries.GetAllCouriers;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
 
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 using OpenApi.Formatters;
+
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,7 +82,6 @@ builder.Services.AddTransient<IRequestHandler<GetBusyCouriersQuery, GetCouriersR
 builder.Services.AddTransient<IRequestHandler<GetAllCouriersQuery, GetCouriersResponseModel>>(_ => new GetAllCouriersQueryHandler(connectionString));
 builder.Services.AddTransient<IRequestHandler<GetIncompletedOrdersQuery, GetIncompletedOrdersResponseModel>>(_ => new GetIncompletedOrdersQueryHandler(connectionString));
 
-
 // HTTP Controllers
 builder.Services.AddControllers(options => { options.InputFormatters.Insert(0, new InputFormatterStream()); })
     .AddNewtonsoftJson(options =>
@@ -111,6 +115,27 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddSwaggerGenNewtonsoftSupport();
 
+// Quartz
+builder.Services.AddQuartz(configure =>
+    {
+        var assignOrdersJobKey = new JobKey(nameof(AssignOrdersJob));
+        var moveCouriersJobKey = new JobKey(nameof(MoveCouriersJob));
+        configure
+            .AddJob<AssignOrdersJob>(assignOrdersJobKey)
+            .AddTrigger(
+                trigger => trigger.ForJob(assignOrdersJobKey)
+                    .WithSimpleSchedule(
+                        schedule => schedule.WithIntervalInSeconds(1)
+                            .RepeatForever()))
+            .AddJob<MoveCouriersJob>(moveCouriersJobKey)
+            .AddTrigger(
+                trigger => trigger.ForJob(moveCouriersJobKey)
+                    .WithSimpleSchedule(
+                        schedule => schedule.WithIntervalInSeconds(2)
+                            .RepeatForever()));
+    });
+builder.Services.AddQuartzHostedService();
+
 var app = builder.Build();
 
 // -----------------------------------
@@ -138,11 +163,10 @@ app.UseCors();
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 // Apply Migrations
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
-}
-
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//    db.Database.Migrate();
+//}
 
 app.Run();

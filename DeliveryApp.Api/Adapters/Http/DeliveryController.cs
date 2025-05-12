@@ -33,7 +33,8 @@ namespace DeliveryApp.Api.Adapters.Http
 
         public override async Task<IActionResult> CreateOrder()
         {
-            var command = new CreateOrderCommand(Guid.NewGuid(), "Some street");
+            //var command = new CreateOrderCommand(Guid.NewGuid(), "Айтишная");
+            var command = new CreateOrderCommand(Guid.NewGuid(), "Random");
             var response = await this.mediator.Send(command);
             if (response.IsFailure)
             {

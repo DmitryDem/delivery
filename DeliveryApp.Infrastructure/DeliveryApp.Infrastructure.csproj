@@ -32,4 +32,14 @@
         <ProjectReference Include="..\DeliveryApp.Core\DeliveryApp.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Protobuf Include="Adapters\Grpc\GeoService\Contract.proto" GrpcServices="Client" Metadata="Proto" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Adapters\Grpc\GeoService\Contract.proto">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

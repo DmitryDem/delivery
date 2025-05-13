@@ -1,11 +1,14 @@
-﻿using DeliveryApp.Core.Domain.Services;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
+using DeliveryApp.Core.Domain.Services;
 using DeliveryApp.Core.Ports;
 using MediatR;
 using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Commands.AssignOrderToCourier
 {
-    public class AssignOrderToCourierCommandHandler : IRequestHandler<AssignOrderToCourierCommand, bool>
+    public class AssignOrderToCourierCommandHandler : IRequestHandler<AssignOrderToCourierCommand, UnitResult<Error>>
     {
         private readonly IOrderRepository orderRepository;
         private readonly ICourierRepository courierRepository;
@@ -24,14 +27,14 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.AssignOrderToCourier
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<bool> Handle(AssignOrderToCourierCommand request, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> Handle(AssignOrderToCourierCommand request, CancellationToken cancellationToken)
         {
             // Получаем неназначенный заказ
             var order = await this.orderRepository.GetFirstInCreatedStatusAsync();
 
             if (order == null)
             {
-                return false;
+                return Errors.OrderInCreatedStatusNotFound();
             }
 
             // Получаем свободных курьеров
@@ -40,7 +43,7 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.AssignOrderToCourier
 
             if (couriers.Count == 0)
             {
-                return false;
+                return Errors.CourierInFreeStatusNotFound();
             }
 
             // Распределяем заказ курьеру с наименьшим временем доставки
@@ -48,13 +51,33 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.AssignOrderToCourier
 
             if (courier.IsFailure)
             {
-                return false;
+                return Errors.DispatchOrderFailure();
             }
 
             this.orderRepository.Update(order);
             this.courierRepository.Update(courier.Value);
+            
+            await this.unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return await this.unitOfWork.SaveChangesAsync(cancellationToken);
+            return UnitResult.Success<Error>();
+        }
+
+        public static class Errors
+        {
+            public static Error OrderInCreatedStatusNotFound()
+            {
+                return new Error($"{nameof(Order).ToLowerInvariant()}.in.created.status.not.found", "Order in created status not found");
+            }
+
+            public static Error CourierInFreeStatusNotFound()
+            {
+                return new Error($"{nameof(Courier).ToLowerInvariant()}.in.free.status.not.found", "Courier in free status not found");
+            }
+
+            public static Error DispatchOrderFailure()
+            {
+                return new Error($"{nameof(Order).ToLowerInvariant()}.dispatch.failure", "Order dispatch failure");
+            }
         }
     }
 }

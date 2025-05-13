@@ -11,6 +11,12 @@
         <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove="Adapters\Http\Contract\OpenApi\**" />
+      <Content Remove="Adapters\Http\Contract\OpenApi\**" />
+      <EmbeddedResource Remove="Adapters\Http\Contract\OpenApi\**" />
+      <None Remove="Adapters\Http\Contract\OpenApi\**" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="Confluent.Kafka" Version="2.9.0" />
         <PackageReference Include="Dapper" Version="2.1.66" />
         <PackageReference Include="Google.Protobuf" Version="3.30.2" />

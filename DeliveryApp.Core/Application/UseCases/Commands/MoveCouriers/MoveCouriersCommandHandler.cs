@@ -1,10 +1,11 @@
-﻿using DeliveryApp.Core.Ports;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Ports;
 using MediatR;
 using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Commands.MoveCouriers
 {
-    public class MoveCouriersCommandHandler : IRequestHandler<MoveCouriersCommand, bool>
+    public class MoveCouriersCommandHandler : IRequestHandler<MoveCouriersCommand, UnitResult<Error>>
     {
         private readonly IOrderRepository orderRepository;
         private readonly ICourierRepository courierRepository;
@@ -20,7 +21,7 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.MoveCouriers
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<bool> Handle(MoveCouriersCommand request, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> Handle(MoveCouriersCommand request, CancellationToken cancellationToken)
         {
             // Получаем все заказы назначенные на курьеров
             var orders = await orderRepository.GetAllInAssignStatus();
@@ -47,7 +48,7 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.MoveCouriers
                 await unitOfWork.SaveChangesAsync(cancellationToken);
             }
 
-            return true;
+            return UnitResult.Success<Error>();
         }
     }
 }

@@ -28,6 +28,11 @@ using Newtonsoft.Json.Serialization;
 using OpenApi.Formatters;
 
 using Quartz;
+using Microsoft.Extensions.DependencyInjection;
+using DeliveryApp.Api.Adapters.Kafka.BasketConfirmed;
+using DeliveryApp.Infrastructure;
+
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,8 +55,8 @@ builder.Services.AddCors(options =>
 builder.Services.ConfigureOptions<SettingsSetup>();
 builder.Services.AddTransient<IDispatchService, DispatchService>();
 
-//var connectionString = builder.Configuration["CONNECTION_STRING"];
-var connectionString = "Host=localhost;Port=5432;Database=delivery;Username=username;Password=secret;";
+var connectionString = builder.Configuration["CONNECTION_STRING"];
+//var connectionString = "Host=localhost;Port=5432;Database=delivery;Username=username;Password=secret;";
 
 // Database, ORM 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -138,8 +143,20 @@ builder.Services.AddQuartz(configure =>
 builder.Services.AddQuartzHostedService();
 
 // gRPC
-var geoServiceGrpcHost = "http://localhost:5004";
-builder.Services.AddTransient<IGeoClient>(_ => new GeoClient(geoServiceGrpcHost));
+builder.Services.AddTransient<IGeoClient, GeoClient>();
+
+// Message Broker Consumer
+builder.Services.Configure<HostOptions>(
+    options =>
+        {
+            options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+            options.ShutdownTimeout = TimeSpan.FromSeconds(30);
+        });
+
+var sp = builder.Services.BuildServiceProvider();
+var mediator = sp.GetRequiredService<IMediator>();
+var options = sp.GetRequiredService<IOptions<Settings>>();
+builder.Services.AddHostedService(_ => new ConsumerService(mediator, options));
 
 var app = builder.Build();
 

@@ -4,6 +4,7 @@ using GeoApp.Api;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Grpc.Net.Client.Configuration;
+using Microsoft.Extensions.Options;
 using Primitives;
 using Location = DeliveryApp.Core.Domain.Model.SharedKernel.Location;
 
@@ -15,8 +16,10 @@ namespace DeliveryApp.Infrastructure.Adapters.Grpc.GeoService
         private readonly SocketsHttpHandler socketsHttpHandler;
         private readonly string url;
 
-        public GeoClient(string geoServiceGrpcHost)
+        public GeoClient(IOptions<Settings> settings)
         {
+            var geoServiceGrpcHost = settings.Value.GeoServiceGrpcHost;
+
             if (string.IsNullOrWhiteSpace(geoServiceGrpcHost))
             {
                 throw new ArgumentException(nameof(geoServiceGrpcHost));

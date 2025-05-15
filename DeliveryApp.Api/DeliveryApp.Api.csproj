@@ -50,4 +50,7 @@
         <ProjectReference Include="..\DeliveryApp.Core\DeliveryApp.Core.csproj" />
         <ProjectReference Include="..\DeliveryApp.Infrastructure\DeliveryApp.Infrastructure.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Protobuf Include="Adapters\Kafka\BasketConfirmed\Contract.proto" />
+    </ItemGroup>
 </Project>

@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Primitives;
 using System.Reflection;
 using CSharpFunctionalExtensions;
-
 using DeliveryApp.Api.Adapters.Jobs;
 using DeliveryApp.Core.Application.UseCases.Commands.AssignOrderToCourier;
 using DeliveryApp.Core.Application.UseCases.Commands.CreateCourier;
@@ -21,7 +20,7 @@ using OpenApi.Filters;
 using OpenApi.OpenApi;
 using DeliveryApp.Core.Application.UseCases.Queries;
 using DeliveryApp.Core.Application.UseCases.Queries.GetAllCouriers;
-using DeliveryApp.Core.Domain.Model.CourierAggregate;
+using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
 
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -44,6 +43,8 @@ builder.Services.AddCors(options =>
             policy.AllowAnyOrigin(); // Не делайте так в проде!
         });
 });
+
+// APP - http://localhost:8086
 
 // Configuration
 builder.Services.ConfigureOptions<SettingsSetup>();
@@ -135,6 +136,10 @@ builder.Services.AddQuartz(configure =>
                             .RepeatForever()));
     });
 builder.Services.AddQuartzHostedService();
+
+// gRPC
+var geoServiceGrpcHost = "http://localhost:5004";
+builder.Services.AddTransient<IGeoClient>(_ => new GeoClient(geoServiceGrpcHost));
 
 var app = builder.Build();
 

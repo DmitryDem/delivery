@@ -29,7 +29,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Kafka.OrderCompleted
                 BootstrapServers = options.Value.MessageBrokerHost
             };
 
-            this.topicName = options.Value.BasketConfirmedTopic;
+            this.topicName = options.Value.OrderStatusChangedTopic;
         }
 
         public async Task Publish(OrderCompletedDomainEvent notification, CancellationToken cancellationToken)

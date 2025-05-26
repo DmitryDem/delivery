@@ -3,14 +3,16 @@ using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using FluentAssertions;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Testcontainers.PostgreSql;
 using Xunit;
 using Location = DeliveryApp.Core.Domain.Model.SharedKernel.Location;
 
 namespace DeliveryApp.IntegrationTests.Repositories
 {
-    public class OrderRepositoryShould : IAsyncLifetime
+    public class OrderRepositoryTestsShould : IAsyncLifetime
     {
         /// <summary>
         /// Контейнер с PostgreSQL
@@ -24,6 +26,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             .Build();
 
         private ApplicationDbContext context;
+        private IMediator mediator;
 
         /// <summary>
         /// Инициализация контейнера
@@ -41,6 +44,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
                 .Options;
 
             this.context = new ApplicationDbContext(contextOptions);
+            this.mediator = Substitute.For<IMediator>();
             this.context.Database.Migrate();
         }
 
@@ -65,7 +69,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             //Act
             var orderRepository = new OrderRepository(this.context);
             await orderRepository.AddAsync(order);
-            var unitOfWork = new UnitOfWork(this.context);
+            var unitOfWork = new UnitOfWork(this.context, this.mediator);
             await unitOfWork.SaveChangesAsync();
 
             //Assert
@@ -82,7 +86,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             var order = Order.Create(basketId, location).Value;
             var orderRepository = new OrderRepository(this.context);
             await orderRepository.AddAsync(order);
-            var unitOfWork = new UnitOfWork(this.context);
+            var unitOfWork = new UnitOfWork(this.context, this.mediator);
             await unitOfWork.SaveChangesAsync();
 
             //Act
@@ -105,7 +109,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             var order = Order.Create(basketId, location).Value;
             var orderRepository = new OrderRepository(this.context);
             await orderRepository.AddAsync(order);
-            var unitOfWork = new UnitOfWork(this.context);
+            var unitOfWork = new UnitOfWork(this.context, this.mediator);
             await unitOfWork.SaveChangesAsync();
 
             //Act
@@ -127,7 +131,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             var order2 = Order.Create(Guid.NewGuid(), Location.CreateRandom().Value).Value;
             await orderRepository.AddAsync(order2);
 
-            var unitOfWork = new UnitOfWork(this.context);
+            var unitOfWork = new UnitOfWork(this.context, this.mediator);
             await unitOfWork.SaveChangesAsync();
 
             var orderFromDb = await orderRepository.GetAsync(order1.Id);
@@ -146,7 +150,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
         {
             //Arrange
             var orderRepository = new OrderRepository(this.context);
-            var unitOfWork = new UnitOfWork(this.context);
+            var unitOfWork = new UnitOfWork(this.context, this.mediator);
 
             var order1 = Order.Create(Guid.NewGuid(), Location.CreateRandom().Value).Value;
             await orderRepository.AddAsync(order1);

@@ -30,6 +30,8 @@ using OpenApi.Formatters;
 using Quartz;
 using Microsoft.Extensions.DependencyInjection;
 using DeliveryApp.Api.Adapters.Kafka.BasketConfirmed;
+using DeliveryApp.Core.Application.DomainEventHandlers;
+using DeliveryApp.Core.Domain.Model.OrderAggregate.DomainEvents;
 using DeliveryApp.Infrastructure;
 
 using Microsoft.Extensions.Options;
@@ -157,6 +159,13 @@ var sp = builder.Services.BuildServiceProvider();
 var mediator = sp.GetRequiredService<IMediator>();
 var options = sp.GetRequiredService<IOptions<Settings>>();
 builder.Services.AddHostedService(_ => new ConsumerService(mediator, options));
+
+// Domain Event Handlers
+builder.Services.AddTransient<INotificationHandler<OrderCompletedDomainEvent>, OrderCompletedDomainEventHandler>();
+
+// Message Broker Producer
+builder.Services.AddTransient<IMessageBusProducer, DeliveryApp.Infrastructure.Adapters.Kafka.OrderCompleted.Producer>();
+
 
 var app = builder.Build();
 

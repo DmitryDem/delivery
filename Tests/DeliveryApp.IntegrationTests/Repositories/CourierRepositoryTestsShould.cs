@@ -3,13 +3,17 @@ using DeliveryApp.Core.Domain.Model.SharedKernel;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using FluentAssertions;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+
+using NSubstitute;
+
 using Testcontainers.PostgreSql;
 using Xunit;
 
 namespace DeliveryApp.IntegrationTests.Repositories
 {
-    public class CourierRepositoryTests : IAsyncLifetime
+    public class CourierRepositoryTestsShould : IAsyncLifetime
     {
         /// <summary>
         /// Контейнер с PostgreSQL
@@ -23,6 +27,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             .Build();
 
         private ApplicationDbContext context;
+        private IMediator mediator;
 
         /// <summary>
         /// Инициализация контейнера
@@ -40,6 +45,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
                 .Options;
 
             this.context = new ApplicationDbContext(contextOptions);
+            this.mediator = Substitute.For<IMediator>();
             this.context.Database.Migrate();
         }
 
@@ -63,7 +69,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             //Act
             var courierRepository = new CourierRepository(this.context);
             await courierRepository.AddAsync(courier);
-            var unitOfWork = new UnitOfWork(this.context);
+            var unitOfWork = new UnitOfWork(this.context, this.mediator);
             await unitOfWork.SaveChangesAsync();
 
             //Assert
@@ -79,7 +85,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             var courier = Courier.Create("Alex", "Car", 3, location).Value;
             var courierRepository = new CourierRepository(this.context);
             await courierRepository.AddAsync(courier);
-            var unitOfWork = new UnitOfWork(this.context);
+            var unitOfWork = new UnitOfWork(this.context, this.mediator);
             await unitOfWork.SaveChangesAsync();
 
             //Act
@@ -99,7 +105,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             var courier = Courier.Create("Alex", "Car", 3, location).Value;
             var courierRepository = new CourierRepository(this.context);
             await courierRepository.AddAsync(courier);
-            var unitOfWork = new UnitOfWork(this.context);
+            var unitOfWork = new UnitOfWork(this.context, this.mediator);
             await unitOfWork.SaveChangesAsync();
 
             //Act
@@ -114,7 +120,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
         {
             //Arrange
             var courierRepository = new CourierRepository(this.context);
-            var unitOfWork = new UnitOfWork(this.context);
+            var unitOfWork = new UnitOfWork(this.context, this.mediator);
 
             var courier1 = Courier.Create("Alex", "Car", 3, Location.CreateRandom().Value).Value;
             await courierRepository.AddAsync(courier1);

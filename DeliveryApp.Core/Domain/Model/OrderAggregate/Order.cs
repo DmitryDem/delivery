@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Domain.Model.CourierAggregate;
+using DeliveryApp.Core.Domain.Model.OrderAggregate.DomainEvents;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
 
 namespace DeliveryApp.Core.Domain.Model.OrderAggregate
@@ -85,6 +86,7 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
             }
 
             Status = OrderStatus.Completed();
+            RaiseDomainEvent(new OrderCompletedDomainEvent(this.Id));
             return this;
         }
 

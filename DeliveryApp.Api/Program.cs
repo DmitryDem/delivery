@@ -33,6 +33,7 @@ using DeliveryApp.Api.Adapters.Kafka.BasketConfirmed;
 using DeliveryApp.Core.Application.DomainEventHandlers;
 using DeliveryApp.Core.Domain.Model.OrderAggregate.DomainEvents;
 using DeliveryApp.Infrastructure;
+using DeliveryApp.Infrastructure.Adapters.Postgres.BackgroundJobs;
 
 using Microsoft.Extensions.Options;
 
@@ -142,6 +143,21 @@ builder.Services.AddQuartz(configure =>
                         schedule => schedule.WithIntervalInSeconds(2)
                             .RepeatForever()));
     });
+
+builder.Services.AddQuartz(configure =>
+    {
+        var processOutboxMessagesJobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+        configure
+            .AddJob<ProcessOutboxMessagesJob>(processOutboxMessagesJobKey)
+            .AddTrigger(
+                trigger => trigger.ForJob(processOutboxMessagesJobKey)
+                    .WithSimpleSchedule(
+                        schedule => schedule.WithIntervalInSeconds(3)
+                            .RepeatForever()));
+    });
+
+
+
 builder.Services.AddQuartzHostedService();
 
 // gRPC
